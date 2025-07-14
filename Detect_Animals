@@ -1,0 +1,17 @@
+# OpenCV for object detection
+import cv2
+
+# Load Image
+raw_image = cv2.imread("C:/Users/dee41/OneDrive - rit.edu/College Assignments/Personal Projects/Marine Detection/Marine-Detection-Software/Test Marine/Dolphin.jpg")
+
+#Resize Image
+image = cv2.resize(raw_image, (800, 800))
+
+#Check if image loaded successfully
+if image is None:
+    print("Error: Image not found or path is incorrect")
+else:
+    #Display Image
+    cv2.imshow("Marine Animal", image)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows
