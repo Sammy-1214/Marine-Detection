@@ -1,0 +1,25 @@
+from ultralytics import YOLO
+import cv2
+
+# Load original image
+image_path = "C:/Users/dee41/OneDrive - rit.edu/College Assignments/Personal Projects/Marine Detection/Marine-Detection-Software/Test Marine/Dolphin.jpg"
+image = cv2.imread(image_path)
+
+# Resize the image
+resized_image = cv2.resize(image, (800, 800))
+
+# Save it temporarily so YOLO can read it
+resized_path = "C:/Users/dee41/OneDrive - rit.edu/College Assignments/Personal Projects/Marine Detection/Marine-Detection-Software/Test Marine/Dolphin_resized.jpg"
+cv2.imwrite(resized_path, resized_image)
+
+# Load the YOLOv5 model
+model = YOLO("yolov5su.pt") # Or "yolov8n.pt" for YOLOv8
+
+# Run detection on an image
+detect_image = model(resized_path, save = True)
+
+# Display the saved result using OpenCV (YOLO saves it in runs/detect)
+results = cv2.imread("runs/detect/predict/Dolphin_resized.jpg")
+cv2.imshow("YOLO Detection", results)
+cv2.waitKey(0)
+cv2.destroyAllWindows()
