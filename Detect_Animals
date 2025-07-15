@@ -1,27 +1,35 @@
 # OpenCV for object detection
 import cv2
+import numpy as np
 
-# Load and resize image
+# Load and resize image of dolphin
 raw_image = cv2.imread("C:/Users/dee41/OneDrive - rit.edu/College Assignments/Personal Projects/Marine Detection/Marine-Detection-Software/Test Marine/Dolphin.jpg")
 image = cv2.resize(raw_image, (800, 800))
 
-# Convert to grayscale
-gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+# Convert to HSV color space
+hsv = cv2.cvtColor(image, cv2.COLOR_BGR2HSV)
 
-# Apply Gaussian blur to reduce noise
-blurred = cv2.GaussianBlur(gray, (5, 5), 0)
+# Define gray color range in HSV
+# Gray = low saturation, mid-value (brightness)
+lower_gray = np.array([0, 0, 40]) # Hue = any, Sat = 0-30, Value = 40+
+upper_gray = np.array([180, 50, 500]) # Adjust brightness upper bound as needed
 
-# Threshold the image to isolate objects
-thresh = cv2.adaptiveThreshold(blurred, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY_INV, 11, 2)
+# Create mask for gray
+mask = cv2.inRange(hsv, lower_gray, upper_gray)
 
-# Find contours in the edge-detected image
-contours, _ = cv2.findContours(thresh.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+#Clean up mask using morphological operations
+kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (5, 5))
+mask = cv2.morphologyEx(mask, cv2.MORPH_CLOSE, kernel)
+mask = cv2.morphologyEx(mask, cv2.MORPH_OPEN, kernel)
 
-# Draw bounding boxes around contours
+# Find contours in the mask
+contours, _ = cv2.findContours(mask.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+
+# Draw bounding boxes around large gray areas
 output = image.copy()
 for contour in contours:
     area = cv2.contourArea(contour)
-    if area > 1000:
+    if area > 800:
         # Filter out small noises
         x, y, w, h = cv2.boundingRect(contour)
         cv2.rectangle(output, (x, y), (x + w, y + h), (0, 255, 0), 2)
@@ -31,6 +39,7 @@ if image is None:
     print("Error: Image not found or path is incorrect")
 else:
     #Display Image
-    cv2.imshow("Contour Detection", output)
+    cv2.imshow("Gray Detection (Dolphin)", output)
+    cv2.imshow("Mask", mask) # Shows the filtered gray mask
     cv2.waitKey(0)
     cv2.destroyAllWindows
