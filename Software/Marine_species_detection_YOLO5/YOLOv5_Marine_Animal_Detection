@@ -1,0 +1,43 @@
+import imutils
+import cv2
+import os
+
+# Paths
+# detect = "detect.py"
+weights_path = "C:/Users/dee41/OneDrive - rit.edu/College Assignments/Personal Projects/Marine Detection/Marine-Detection-Software/Marine-species-detection-using-YOLO5/runs_reference/train/marine_yolo5m_final/weights/best.pt"
+image_path = "C:/Users/dee41/OneDrive - rit.edu/College Assignments/Personal Projects/Marine Detection/Marine-Detection-Software/Marine-species-detection-using-YOLO5/Test_marine_images/Dolphin.jpg"
+imgsz = 640
+conf = 0.3
+
+# Make sure image exists
+if not os.path.exists(image_path):
+    print("Image not found")
+    exit()
+
+# Run YOLOv5 detection (uses detect.py)
+run_detection = (
+    f"py detect.py "
+    f"--weights {weights_path} "
+    f"--source {image_path} "
+    f"--imgsz {imgsz} "
+    f"--conf {conf}"
+)
+
+print("Running YOLOv5 detection...")
+os.system(run_detection)
+
+# Locate output image
+output_folder = "runs_testing/detect/predict4"
+output_filename = os.path.basename(image_path)
+output_image = os.path.join(output_folder, output_filename)
+
+# Display output image (resized)
+if os.path.exists(output_image):
+    print(f"Detection result found at {output_image}")
+    results = cv2.imread(output_image)
+    resized_results = imutils.resize(results, width=1000)
+    cv2.imshow("Marine Animal YOLO Detection", resized_results)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+else:
+    print("Detection output not found")
