@@ -1,42 +1,39 @@
-import imutils
-import cv2
+import sys
 import os
+import cv2
+import imutils
+import pathlib
+pathlib.PosixPath = pathlib.WindowsPath
 
-# Paths
-# detect = "detect.py"
-weights_path = "C:/Users/dee41/OneDrive - rit.edu/College Assignments/Personal Projects/Marine Detection/Marine-Detection-Software/Marine-species-detection-using-YOLO5/runs_reference/train/marine_yolo5m_final/weights/best.pt"
-image_path = "C:/Users/dee41/OneDrive - rit.edu/College Assignments/Personal Projects/Marine Detection/Marine-Detection-Software/Marine-species-detection-using-YOLO5/Test_marine_images/Dolphin.jpg"
-imgsz = 640
-conf = 0.3
+# Add the YOLOv5 folder to the Python path
+yolov5_path = os.path.abspath("C:/Users/dee41/OneDrive - rit.edu/College Assignments/Personal Projects/yolov5")
+if yolov5_path not in sys.path:
+    sys.path.append(yolov5_path)
 
-# Make sure image exists
-if not os.path.exists(image_path):
-    print("Image not found")
-    exit()
+from detect import run
 
-# Run YOLOv5 detection (uses detect.py)
-run_detection = (
-    f"py detect.py "
-    f"--weights {weights_path} "
-    f"--source {image_path} "
-    f"--imgsz {imgsz} "
-    f"--conf {conf}"
+# Run detection and save to folder
+run(
+    weights="runs_reference/train/marine_yolo5m_final/weights/best.pt",
+    source="Test_marine_images/Dolphin.jpg",
+    data="data.yaml",
+    project="runs_testing/detect/predict",
+    name="predict5",
+    imgsz=(640, 640),
+    conf_thres=0.3,
+    save_conf=True
 )
 
-print("Running YOLOv5 detection...")
-os.system(run_detection)
+# Find the predicted image
+output_folder = "runs_testing/detect/predict5"
+image_name = os.path.basename("Test_marine_images/Dolphin.jpg")
+result_path = os.path.join(output_folder, image_name)
 
-# Locate output image
-output_folder = "runs_testing/detect/predict4"
-output_filename = os.path.basename(image_path)
-output_image = os.path.join(output_folder, output_filename)
-
-# Display output image (resized)
-if os.path.exists(output_image):
-    print(f"Detection result found at {output_image}")
-    results = cv2.imread(output_image)
-    resized_results = imutils.resize(results, width=1000)
-    cv2.imshow("Marine Animal YOLO Detection", resized_results)
+# Read and display with OpenCV
+if os.path.exists(result_path):
+    results = cv2.imread(result_path)
+    results_resized = imutils.resize(results, width=1000)
+    cv2.imshow("Marine Animal YOLO Detection", results_resized)
     cv2.waitKey(0)
     cv2.destroyAllWindows()
 else:
