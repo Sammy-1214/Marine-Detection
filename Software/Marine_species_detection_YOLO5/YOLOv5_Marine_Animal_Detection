@@ -1,5 +1,6 @@
 import sys
 import os
+import glob
 import cv2
 import imutils
 import pathlib
@@ -15,26 +16,45 @@ from detect import run
 # Run detection and save to folder
 run(
     weights="runs_reference/train/marine_yolo5m_final/weights/best.pt",
-    source="Test_marine_images/Dolphin.jpg",
+    source="Test_marine_images",
     data="data.yaml",
-    project="runs_testing/detect/predict",
-    name="predict5",
+    project="runs_testing/detect",
+    name="predict",
     imgsz=(640, 640),
     conf_thres=0.3,
     save_conf=True
 )
 
-# Find the predicted image
-output_folder = "runs_testing/detect/predict5"
-image_name = os.path.basename("Test_marine_images/Dolphin.jpg")
-result_path = os.path.join(output_folder, image_name)
+# Get most recent output folder
+result_folder = "runs_testing/detect"
+all_result_sub_folders = [os.path.join(result_folder, d) for d in os.listdir(result_folder) if os.path.isdir(os.path.join(result_folder, d))]
+latest_folder = max(all_result_sub_folders, key=os.path.getmtime)
 
-# Read and display with OpenCV
-if os.path.exists(result_path):
-    results = cv2.imread(result_path)
+# Get all image paths from folder
+image_paths = sorted(glob.glob(os.path.join(latest_folder, "*.*"))) # Includes .jpg, .png, etc.
+
+# Read and display results with OpenCV and arrow navigation
+index = 0
+while True:
+    if not image_paths:
+        print("No images found")
+        break
+
+    results = cv2.imread(image_paths[index])
+    if results is None:
+        print(f"Could not load {image_paths[index]}")
+        break
+
     results_resized = imutils.resize(results, width=1000)
     cv2.imshow("Marine Animal YOLO Detection", results_resized)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
-else:
-    print("Detection output not found")
+    
+    key = cv2.waitKey(0)
+
+    if key == 27 or key == ord("q"): # esc or "q"
+        break
+    elif key == 37: # Left arrow
+        index = (index - 1) % len(image_paths)
+    elif key == 39: # Right arrow
+        index = (index + 1) % len(image_paths)
+
+cv2.destroyAllWindows
