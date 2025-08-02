@@ -16,13 +16,12 @@ from detect import run
 # Run detection and save to folder
 run(
     weights="runs_reference/train/marine_yolo5m_final/weights/best.pt",
-    source="New_test_marine_images",
+    source="Test_marine_images",
     data="data.yaml",
     project="runs_testing/detect",
     name="predict",
     imgsz=(416, 416),
     conf_thres= 0.35,
-    augment= True,
     agnostic_nms= True,
     save_conf=True,
     save_txt=True
