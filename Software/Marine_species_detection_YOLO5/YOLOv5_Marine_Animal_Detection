@@ -1,11 +1,30 @@
+# %%
+# =========
+#  IMPORTS
+# =========
+
+import pathlib
+pathlib.PosixPath = pathlib.WindowsPath
+
 import sys
 import os
 import glob
 import cv2
 import imutils
-import pathlib
-pathlib.PosixPath = pathlib.WindowsPath
 
+import json
+import torch
+import numpy as np
+from datetime import datetime
+
+yolov5_path = "C:/Users/dee41/OneDrive - rit.edu/College Assignments/Personal Projects/yolov5"
+weights_path = "runs_reference/train/marine_yolo5m_final/weights/best.pt"
+
+model = torch.hub.load(yolov5_path, "custom", path=weights_path, source="local")
+
+from detect import run
+
+'''
 # Add the YOLOv5 folder to the Python path
 yolov5_path = os.path.abspath("C:/Users/dee41/OneDrive - rit.edu/College Assignments/Personal Projects/yolov5")
 if yolov5_path not in sys.path:
@@ -13,9 +32,27 @@ if yolov5_path not in sys.path:
 
 from detect import run
 
+from models.common import DetectMultiBackend
+from utils.dataloaders import LoadStreams, LoadImages
+from utils.general import non_max_suppression, scale_boxes
+from utils.torch_utils import select_device
+'''
+
+# %%
+# =================
+#  IMAGE DETECTION
+# =================
+
+# Add the YOLOv5 folder to the Python path
+# yolov5_path = os.path.abspath("C:/Users/dee41/OneDrive - rit.edu/College Assignments/Personal Projects/yolov5")
+# if yolov5_path not in sys.path:
+    # sys.path.append(yolov5_path)
+
+# from detect import run
+
 # Run detection and save to folder
 run(
-    weights="runs_reference/train/marine_yolo5m_final/weights/best.pt",
+    weights=weights_path,
     source="Test_marine_images",
     data="data.yaml",
     project="runs_testing/detect",
@@ -35,29 +72,63 @@ latest_folder = max(all_result_sub_folders, key=os.path.getmtime)
 # Get all image paths from folder
 image_paths = sorted(glob.glob(os.path.join(latest_folder, "*.*"))) # Includes .jpg, .png, etc.
 
-# Read and display results with OpenCV and arrow navigation
+# Read and display image results with OpenCV and arrow navigation
 index = 0
 while True:
     if not image_paths:
         print("No images found")
         break
 
-    results = cv2.imread(image_paths[index])
-    if results is None:
+    image_results = cv2.imread(image_paths[index])
+    if image_results is None:
         print(f"Could not load {image_paths[index]}")
         break
 
-    results_resized = imutils.resize(results, width=1000)
-    cv2.putText(results_resized, "Use A/D to scroll, Q or ESC to quit", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 2, cv2.LINE_AA)
-    cv2.imshow("Marine Animal YOLO Detection", results_resized)
+    image_results_resized = imutils.resize(image_results, width=1000)
+    cv2.putText(image_results_resized, "Use A/D to scroll, Q or ESC to quit", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (255, 255, 255), 2, cv2.LINE_AA)
+    cv2.imshow("Marine Animal YOLO Detection", image_results_resized)
     
     key = cv2.waitKey(0)
 
     if key == 27 or key == ord("q"): # esc or "q"
         break
-    elif key == ord("a"): # a key for previous image
+    if key == ord("a"): # a key for previous image
         index = (index - 1) % len(image_paths)
     elif key == ord("d"): # d key for next image
         index = (index + 1) % len(image_paths)
 
 cv2.destroyAllWindows
+
+#%%
+# =================
+#  VIDEO DETECTION
+# =================
+
+# Video input
+video_path = "Test_marine_videos/Penguin"
+cap = cv2.VideoCapture(video_path)
+
+frame_rate = cap.get(cv2.CAP_PROP_FPS)
+frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+
+# JSON output structure
+log = {
+    "video_file": os.path.basename(video_path),
+    "frame_width": frame_width,
+    "frame_height": frame_height,
+    "detections": []
+}
+
+frame_num = 0
+
+while cap.isOpened():
+    success, frame = cap.read()
+    if not success:
+        break
+
+# Run YOLOv5 detection
+video_results = yolov5_path(frame)
+detections = video_results.xyxy[0].cpu().numpy()
+
+objects = []
