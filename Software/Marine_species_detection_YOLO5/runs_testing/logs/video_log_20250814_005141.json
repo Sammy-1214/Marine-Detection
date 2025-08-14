@@ -1,0 +1,346 @@
+{
+    "video_file": "Penguin.mp4",
+    "frame_width": 1920,
+    "frame_height": 1080,
+    "detections": [
+        {
+            "frame_number": 0,
+            "timestamp": 0.0,
+            "objects": [
+                {
+                    "label": "puffin",
+                    "confidence": 0.78,
+                    "bbox": [
+                        1281,
+                        491,
+                        1441,
+                        819
+                    ],
+                    "centroid": [
+                        1361,
+                        655
+                    ]
+                },
+                {
+                    "label": "penguin",
+                    "confidence": 0.77,
+                    "bbox": [
+                        988,
+                        78,
+                        1162,
+                        254
+                    ],
+                    "centroid": [
+                        1075,
+                        166
+                    ]
+                },
+                {
+                    "label": "puffin",
+                    "confidence": 0.64,
+                    "bbox": [
+                        884,
+                        411,
+                        1046,
+                        704
+                    ],
+                    "centroid": [
+                        965,
+                        557
+                    ]
+                }
+            ]
+        },
+        {
+            "frame_number": 50,
+            "timestamp": 1.667,
+            "objects": [
+                {
+                    "label": "puffin",
+                    "confidence": 0.57,
+                    "bbox": [
+                        1161,
+                        520,
+                        1392,
+                        854
+                    ],
+                    "centroid": [
+                        1277,
+                        687
+                    ]
+                },
+                {
+                    "label": "penguin",
+                    "confidence": 0.54,
+                    "bbox": [
+                        964,
+                        135,
+                        1121,
+                        279
+                    ],
+                    "centroid": [
+                        1042,
+                        207
+                    ]
+                },
+                {
+                    "label": "puffin",
+                    "confidence": 0.5,
+                    "bbox": [
+                        828,
+                        427,
+                        1009,
+                        738
+                    ],
+                    "centroid": [
+                        918,
+                        582
+                    ]
+                }
+            ]
+        },
+        {
+            "frame_number": 100,
+            "timestamp": 3.333,
+            "objects": [
+                {
+                    "label": "penguin",
+                    "confidence": 0.42,
+                    "bbox": [
+                        974,
+                        92,
+                        1134,
+                        269
+                    ],
+                    "centroid": [
+                        1054,
+                        181
+                    ]
+                }
+            ]
+        },
+        {
+            "frame_number": 150,
+            "timestamp": 5.0,
+            "objects": []
+        },
+        {
+            "frame_number": 200,
+            "timestamp": 6.667,
+            "objects": []
+        },
+        {
+            "frame_number": 250,
+            "timestamp": 8.333,
+            "objects": [
+                {
+                    "label": "stingray",
+                    "confidence": 0.69,
+                    "bbox": [
+                        1149,
+                        329,
+                        1286,
+                        585
+                    ],
+                    "centroid": [
+                        1217,
+                        457
+                    ]
+                }
+            ]
+        },
+        {
+            "frame_number": 300,
+            "timestamp": 10.0,
+            "objects": [
+                {
+                    "label": "fish",
+                    "confidence": 0.7,
+                    "bbox": [
+                        954,
+                        124,
+                        1113,
+                        300
+                    ],
+                    "centroid": [
+                        1034,
+                        212
+                    ]
+                },
+                {
+                    "label": "puffin",
+                    "confidence": 0.65,
+                    "bbox": [
+                        1248,
+                        619,
+                        1527,
+                        970
+                    ],
+                    "centroid": [
+                        1387,
+                        795
+                    ]
+                },
+                {
+                    "label": "puffin",
+                    "confidence": 0.44,
+                    "bbox": [
+                        1108,
+                        375,
+                        1223,
+                        584
+                    ],
+                    "centroid": [
+                        1165,
+                        480
+                    ]
+                }
+            ]
+        },
+        {
+            "frame_number": 350,
+            "timestamp": 11.667,
+            "objects": [
+                {
+                    "label": "stingray",
+                    "confidence": 0.52,
+                    "bbox": [
+                        1122,
+                        431,
+                        1228,
+                        608
+                    ],
+                    "centroid": [
+                        1175,
+                        519
+                    ]
+                }
+            ]
+        },
+        {
+            "frame_number": 400,
+            "timestamp": 13.333,
+            "objects": [
+                {
+                    "label": "puffin",
+                    "confidence": 0.76,
+                    "bbox": [
+                        1072,
+                        452,
+                        1228,
+                        715
+                    ],
+                    "centroid": [
+                        1150,
+                        583
+                    ]
+                }
+            ]
+        },
+        {
+            "frame_number": 450,
+            "timestamp": 15.0,
+            "objects": [
+                {
+                    "label": "stingray",
+                    "confidence": 0.39,
+                    "bbox": [
+                        1070,
+                        371,
+                        1206,
+                        625
+                    ],
+                    "centroid": [
+                        1138,
+                        498
+                    ]
+                }
+            ]
+        },
+        {
+            "frame_number": 500,
+            "timestamp": 16.667,
+            "objects": []
+        },
+        {
+            "frame_number": 550,
+            "timestamp": 18.333,
+            "objects": []
+        },
+        {
+            "frame_number": 600,
+            "timestamp": 20.0,
+            "objects": [
+                {
+                    "label": "puffin",
+                    "confidence": 0.79,
+                    "bbox": [
+                        1237,
+                        526,
+                        1492,
+                        953
+                    ],
+                    "centroid": [
+                        1365,
+                        740
+                    ]
+                }
+            ]
+        },
+        {
+            "frame_number": 650,
+            "timestamp": 21.667,
+            "objects": []
+        },
+        {
+            "frame_number": 700,
+            "timestamp": 23.333,
+            "objects": [
+                {
+                    "label": "puffin",
+                    "confidence": 0.42,
+                    "bbox": [
+                        1146,
+                        520,
+                        1268,
+                        621
+                    ],
+                    "centroid": [
+                        1207,
+                        570
+                    ]
+                }
+            ]
+        },
+        {
+            "frame_number": 750,
+            "timestamp": 25.0,
+            "objects": []
+        },
+        {
+            "frame_number": 800,
+            "timestamp": 26.667,
+            "objects": []
+        },
+        {
+            "frame_number": 850,
+            "timestamp": 28.333,
+            "objects": [
+                {
+                    "label": "penguin",
+                    "confidence": 0.87,
+                    "bbox": [
+                        367,
+                        458,
+                        750,
+                        723
+                    ],
+                    "centroid": [
+                        559,
+                        590
+                    ]
+                }
+            ]
+        }
+    ]
+}
