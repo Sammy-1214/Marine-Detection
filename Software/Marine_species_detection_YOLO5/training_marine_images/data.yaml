@@ -1,0 +1,20 @@
+train: training_marine_images/train/images
+val: training_marine_images/valid/images
+test: training_marine_images/test/images
+
+nc: 7
+names:
+0: fish
+1: jellyfish
+2: penguin
+3: puffin
+4: shark
+5: starfish
+6: stingray 
+
+roboflow:
+  workspace: datasets-5ubnn
+  project: sea-ag1ue
+  version: 1
+  license: CC BY 4.0
+  url: https://universe.roboflow.com/datasets-5ubnn/sea-ag1ue/dataset/1

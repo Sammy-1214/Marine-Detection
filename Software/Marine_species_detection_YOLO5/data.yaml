@@ -3,7 +3,7 @@ train: /content/aquarium_pretrain/train/images
 val: /content/aquarium_pretrain/valid/images
 test: /content/aquarium_pretrain/test/images
 
-nc: 1
+nc: 7
 names: # ← change this list according to your actual class names
 0: fish
 1: jellyfish

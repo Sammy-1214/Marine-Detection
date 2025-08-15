@@ -17,41 +17,42 @@ import torch
 import numpy as np
 from datetime import datetime
 
+# Load YOLOv5 model
 yolov5_path = "C:/Users/dee41/OneDrive - rit.edu/College Assignments/Personal Projects/yolov5"
 weights_path = "runs_reference/train/marine_yolo5m_final/weights/best.pt"
 
-model = torch.hub.load(yolov5_path, "custom", path=weights_path, source="local")
+device = "cuda" if torch.cuda.is_available() else "cpu"
+model = torch.hub.load(yolov5_path, "custom", path=weights_path, source="local").to(device)
+model.conf = 0.35
+model.iou = 0.35
+model.agnostic = True
 
-from detect import run
+from detect import run as detect_run
+from train import run as train_run
 
-'''
-# Add the YOLOv5 folder to the Python path
-yolov5_path = os.path.abspath("C:/Users/dee41/OneDrive - rit.edu/College Assignments/Personal Projects/yolov5")
-if yolov5_path not in sys.path:
-    sys.path.append(yolov5_path)
+# %%
+# ==========
+#  TRAINING
+# ==========
 
-from detect import run
-
-from models.common import DetectMultiBackend
-from utils.dataloaders import LoadStreams, LoadImages
-from utils.general import non_max_suppression, scale_boxes
-from utils.torch_utils import select_device
-'''
+# Run training
+train_run(
+    weights=weights_path,
+    data="training_marine_images/data.yaml",
+    imgsz=(640, 640),
+    epochs=100,
+    project="Marine_species_detection_YOLO5",
+    name="improved_best",
+    cache=True
+)
 
 # %%
 # =================
 #  IMAGE DETECTION
 # =================
 
-# Add the YOLOv5 folder to the Python path
-# yolov5_path = os.path.abspath("C:/Users/dee41/OneDrive - rit.edu/College Assignments/Personal Projects/yolov5")
-# if yolov5_path not in sys.path:
-    # sys.path.append(yolov5_path)
-
-# from detect import run
-
 # Run detection and save to folder
-run(
+detect_run(
     weights=weights_path,
     source="Test_marine_images",
     data="data.yaml",
@@ -105,12 +106,18 @@ cv2.destroyAllWindows
 # =================
 
 # Video input
-video_path = "Test_marine_videos/Penguin"
-cap = cv2.VideoCapture(video_path)
+video_path = "Test_marine_videos/Penguin.mp4"
+video = cv2.VideoCapture(video_path)
 
-frame_rate = cap.get(cv2.CAP_PROP_FPS)
-frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+n_frames = 50
+
+if not video.isOpened():
+    print(f"Error: Could not open video at path: {video_path}")
+    exit()
+
+frame_rate = video.get(cv2.CAP_PROP_FPS)
+frame_width = int(video.get(cv2.CAP_PROP_FRAME_WIDTH))
+frame_height = int(video.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
 # JSON output structure
 log = {
@@ -121,14 +128,73 @@ log = {
 }
 
 frame_num = 0
+last_detection = []
 
-while cap.isOpened():
-    success, frame = cap.read()
+while video.isOpened():
+    success, frame = video.read()
     if not success:
         break
+    
+    #frame_resized = cv2.resize(frame, (resize_width, resize_height))
+    
+    # Run YOLOv5 detection
+    video_results = model(frame)
+    detections = video_results.xyxy[0].cpu().numpy()
 
-# Run YOLOv5 detection
-video_results = yolov5_path(frame)
-detections = video_results.xyxy[0].cpu().numpy()
+    objects = []
 
-objects = []
+    for det in detections:
+        x1, y1, x2, y2, conf, cls = det
+        label = model.names[int(cls)]
+        bbox = [int(x1), int(y1), int(x2), int(y2)]
+        centroid = [int((x1 + x2) / 2), int((y1 + y2) / 2)]
+
+        objects.append({
+            "label": label,
+            "confidence": round(float(conf), 2),
+            "bbox": bbox,
+            "centroid": centroid
+        })
+
+        # Draw box and label
+        cv2.rectangle(frame, (bbox[0], bbox[1]), (bbox[2], bbox[3]), (255, 100, 0), 2)
+        cv2.putText(frame, f"{label} {conf:.2f}", (bbox[0], bbox[1] - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.6, (255, 100, 0), 2)
+
+    # Check if frame should be logged
+    should_log = False
+
+    if frame_num % n_frames == 0:
+        should_log = True
+    
+    # Add detection info to log
+    if should_log:
+        log["detections"].append({
+            "frame_number": frame_num,
+            "timestamp": round(frame_num / frame_rate, 3),
+            "objects": objects
+        })
+
+    # Show frame
+    video_results_resized = imutils.resize(frame, width=1200)
+    cv2.imshow("Video Detection", video_results_resized)
+    
+    key = cv2.waitKey(1) & 0xFF
+    if key == ord("q") or key == 27:
+        break
+
+    frame_num += 1
+
+video.release()
+cv2.destroyAllWindows()
+
+# Save JSON log
+if frame_num > 0:
+    output_name = os.path.join("runs_testing/logs", f"video_log_{datetime.now().strftime("%Y%m%d_%H%M%S")}.json")
+    with open(output_name, "w") as f:
+        json.dump(log, f, indent=4)
+    print(f"Detection log saved as {output_name}")
+else:
+    print("No frames processed. Log file was not saved")
+
+# %%
+
